@@ -1,0 +1,56 @@
+#include <Wire.h>
+#include <RTClib.h>
+#include <LiquidCrystal_I2C.h>
+
+RTC_DS1307 rtc;
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+void setup() {
+  Serial.begin(9600);
+
+  lcd.init();
+  lcd.backlight();
+
+  if (!rtc.begin()) {
+    lcd.print("RTC Not Found");
+    while (1);
+  }
+
+  // Set the RTC to the date & time when the code was compiled.
+  // Upload once, then comment this line and upload again.
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+}
+
+void loop() {
+
+  DateTime now = rtc.now();
+
+  lcd.setCursor(0, 0);
+  lcd.print("Time: ");
+
+  if (now.hour() < 10) lcd.print("0");
+  lcd.print(now.hour());
+  lcd.print(":");
+
+  if (now.minute() < 10) lcd.print("0");
+  lcd.print(now.minute());
+  lcd.print(":");
+
+  if (now.second() < 10) lcd.print("0");
+  lcd.print(now.second());
+
+  lcd.setCursor(0, 1);
+  lcd.print("Date: ");
+
+  if (now.day() < 10) lcd.print("0");
+  lcd.print(now.day());
+  lcd.print("/");
+
+  if (now.month() < 10) lcd.print("0");
+  lcd.print(now.month());
+  lcd.print("/");
+
+  lcd.print(now.year());
+
+  delay(1000);
+}
